@@ -9,8 +9,6 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Календарь с делами">
   <title>Календарь с делами</title>
-  <link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAAD3klEQVR4nO2dTYgbVRjH/28SbT9WalF3sYIfiLiKXhREEA/uhVZwm66ol12k7BZ78SBU8OIXm72JBxX0IohsL4rgRVkVRFAXPIheRBTFbdWKX23FD9q0medhZjezbjczb5J5M/P+P3hkXuZ95H1/eZk3eU8AoZRSSimllFJKKaWUUkoppZRSYkJEx+ah52ZhLzPBTgSNsNnSTfS5ACMCHFoAA0NL4HMBRoTvBTAz9VmK7dwBI8H34NPMopEMMvrJsDy0YLK9D1qNBt8LMAQCLID3wXtfgL6fgA7/HXxiXH4WIKJzK+XeF8CEdh6A3uJ9AST0cwEUfBl9Icb7Aoj4vDoc9eJsg+8FkArQfvDNTG05VvwivC+ACb4XwET/CDq2cyvxvgC+G70ze0x0qxZCRN8YHe8L4Lvgzezd1ER3aCFE9I3R8b4AIu6A1uF9AUzwvQAm+F6A/hnhzLY2mMQE3wtgQvvB978Avhu9CS1BCCGE6C+0VT3zAA4D2APgNIDn9GefAPgzefwHwDqAUwDuBPA8gHcA/AZgK3ksArgbwFN69j4B8DuAheR8X80BOA/gSwDXFOQyrNzeA7AB4HMAOyvkMlDuuXPpZQF0Z54B8AuAr/WLFuWyP9meBLAYALBWkMuTAC4kOZnO5XAAz+WTyXwyn9cLcpnVsV0G8Ew+FwAIcrnovn/vBXBf8mVzi9S3A/hRrykHC469X3O5WJDLdq5lQS5HAVxJ/r9ckMttADaT/x8ryOUxAL8l2wW55HObTuVypCCX+eS4l5NcrIS7AfykH5CdXXTChwAu67U1f+yLyXajIJftXMqC4M8BOA/gswp5DJTTCwB+AHBDQS4DjQGAk7p9uyCXgfZXmUt6+7Eil/cALAG4qZsODHJ8O/df5GRJLquZ7aczx16u8BhnO9dZADsAfJ85fiHTCR+kzvtMPwVFTOTOvbPCcQNl+SaAnwFcm+qExZrOCTDElnLuZQH0RnwvgHv0oJ9LHfuK++9neiP+RPYHETmX+MO3gf4QpbeDnbovH9AcF+NHR+8AeFp/kE5tNIAXAXyv3/IZHzZ/pHoGwHU6xnZk2g+6A5f0uvFCgS/f0rOx0asTqRf0vLNcZ1TRo58Pt7I3y64XYBjY+g3jwvsCmOB9AXwPPk0GjWSYMU+Ew/LQYsn3QUwI8b0AJvheABN8L4CZBd97fC+ACb4XwATfC2BC+8H3vwB+ZdyD5HsBvA8+6T3eF8AE3wvgewEI+DL6QoTvBfA9+CR8L4AI3wvge/Bp+F4AEXd7XwDfIUYIIYQQQgghhBBCCCGEEEIIIQQR/wNEk0YoHXzl1wAAAABJRU5ErkJggg==">
-<link rel="manifest" href="manifest.json">
   <style>
     /* Основной стиль */
     body {
@@ -555,7 +553,7 @@
         margin-top: 5px;
       }
       .task-input, .todo-input {
-        font-size: 16px; /* Larger for better mobile usability */
+        font-size: 16px;
         padding: 10px 2px;
       }
       .todo {
@@ -669,17 +667,21 @@
     updateTotalTimeDisplay();
   }
 
+  function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
   function formatDate(date, format = 'full') {
     const options = {
       full: { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' },
       short: { day: '2-digit', month: '2-digit', year: 'numeric' },
       dayName: { weekday: 'short' }
     };
-    return new Intl.DateTimeFormat('ru-RU', options[format]).format(date);
+    return capitalizeFirstLetter(new Intl.DateTimeFormat('ru-RU', options[format]).format(date));
   }
 
   function getMonthName(monthIndex) {
-    return new Intl.DateTimeFormat('ru-RU', { month: 'long' }).format(new Date(2020, monthIndex));
+    return capitalizeFirstLetter(new Intl.DateTimeFormat('ru-RU', { month: 'long' }).format(new Date(2020, monthIndex)));
   }
 
   function createSelect(from, to, selected = '') {
@@ -722,7 +724,7 @@
 
   function isWeekend(date) {
     const day = date.getDay();
-    return day === 0 || day === 6; // 0 = воскресенье, 6 = суббота
+    return day === 0 || day === 6;
   }
 
   function renderCalendar() {
@@ -732,7 +734,7 @@
 
     if (currentView === 'year') {
       const year = selectedDate.getFullYear();
-      const startMonth = 0; // Начинаем с января
+      const startMonth = selectedDate.getMonth(); // Start from current month
 
       const grid = document.createElement('div');
       grid.className = 'year-grid';
@@ -747,7 +749,6 @@
         header.textContent = getMonthName(monthIndex);
         monthBox.appendChild(header);
 
-        // Добавляем заголовки дней недели
         const weekdayHeader = document.createElement('div');
         weekdayHeader.className = 'weekday-header';
         ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].forEach(day => {
@@ -780,7 +781,7 @@
 
               cell.textContent = dayNum;
               if (isToday) cell.classList.add('today');
-              if (d === 5 || d === 6) cell.classList.add('weekend'); // Суббота и воскресенье
+              if (d === 5 || d === 6) cell.classList.add('weekend');
               
               cell.onclick = () => {
                 selectedDate = date;
@@ -794,7 +795,6 @@
 
           monthBox.appendChild(weekRow);
           
-          // Если эта неделя уже не содержит дней текущего месяца, прерываем
           if (w * 7 + 7 - startDay > daysInMonth) break;
         }
 
@@ -808,11 +808,9 @@
       const year = selectedDate.getFullYear();
       const month = selectedDate.getMonth();
       
-      // Создаем контейнер для кнопок месяца с только горизонтальной навигацией
       const monthControls = document.createElement('div');
       monthControls.className = 'month-controls';
       
-      // Навигация по месяцам (горизонтальная)
       const monthNavigation = document.createElement('div');
       monthNavigation.className = 'month-navigation';
       
@@ -835,8 +833,6 @@
       monthNavigation.appendChild(prevMonthBtn);
       monthNavigation.appendChild(nextMonthBtn);
       
-      // Удалены стрелки вертикальной навигации по запросу пользователя
-      
       monthControls.appendChild(monthNavigation);
       
       calendar.appendChild(monthControls);
@@ -844,7 +840,6 @@
       const grid = document.createElement('div');
       grid.className = 'month-grid';
 
-      // Добавляем заголовки дней недели
       ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вс'].forEach((d, index) => {
         const h = document.createElement('div');
         h.className = 'month-day-header';
@@ -876,7 +871,6 @@
         if (hasTime) cell.style.border = '2px solid #4CAF50';
         if (isToday) cell.style.border = '2px solid #f44336';
         
-        // Добавляем индикатор для задач
         if (data.tasks[key]?.tasks && data.tasks[key].tasks.length > 0) {
           const taskCount = data.tasks[key].tasks.length;
           const taskIndicator = document.createElement('div');
@@ -949,10 +943,9 @@
         dayCol.appendChild(label);
 
         const inputs = document.createElement('div');
-        inputs.style.flex = '1'; // Заполняем доступное пространство
+        inputs.style.flex = '1';
         data.tasks[key] = data.tasks[key] || { tasks: [] };
 
-        // Отображаем задачи
         data.tasks[key].tasks.forEach((task, taskIndex) => {
           const input = document.createElement('input');
           input.className = 'task-input';
@@ -964,7 +957,6 @@
           inputs.appendChild(input);
         });
 
-        // Добавляем поле для новой задачи
         const addInput = document.createElement('input');
         addInput.className = 'task-input';
         addInput.placeholder = 'Добавить задачу';
@@ -1016,7 +1008,6 @@
       const container = document.createElement('div');
       container.className = 'task-list-container';
 
-      // Добавляем существующие задачи
       data.tasks[key].tasks.forEach((task, index) => {
         const taskRow = document.createElement('div');
         taskRow.style.display = 'flex';
@@ -1047,7 +1038,6 @@
         container.appendChild(taskRow);
       });
 
-      // Добавляем поле для новой задачи
       const addInput = document.createElement('input');
       addInput.className = 'task-input';
       addInput.placeholder = 'Добавить задачу';
@@ -1092,7 +1082,6 @@
   }
 
   function renderTodoLists() {
-    // Сортируем задачи - сначала невыполненные, потом выполненные
     const sortTasks = (tasks) => {
       return [...tasks].sort((a, b) => {
         if (a.completed === b.completed) return 0;
@@ -1100,7 +1089,6 @@
       });
     };
 
-    // Рендерим списки
     ['long', 'shopping'].forEach(type => {
       const container = document.getElementById(`${type}-tasks`);
       container.innerHTML = '';
@@ -1141,7 +1129,7 @@
             input.classList.remove('completed');
           }
           saveToLocalStorage();
-          renderTodoLists(); // Перерисовываем для сортировки
+          renderTodoLists();
         };
         
         input.onchange = () => {
@@ -1166,7 +1154,6 @@
     saveToLocalStorage();
     renderTodoLists();
     
-    // Фокусируемся на новом поле ввода
     setTimeout(() => {
       const tasks = document.getElementById(`${type}-tasks`);
       const lastInput = tasks.querySelector('.todo:last-child .todo-input');
@@ -1180,11 +1167,9 @@
     dialog.style.display = 'block';
     
     const confirmBtn = document.getElementById('confirm-delete-btn');
-    // Удаляем предыдущие обработчики
     const newConfirmBtn = confirmBtn.cloneNode(true);
     confirmBtn.parentNode.replaceChild(newConfirmBtn, confirmBtn);
     
-    // Добавляем новый обработчик
     newConfirmBtn.addEventListener('click', () => {
       if (callback) callback();
       hideConfirmDialog();
@@ -1222,14 +1207,34 @@
     menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
   }
 
-  function saveData() {
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const link = document.createElement('a');
+  async function saveData() {
+    const jsonString = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
     const now = new Date();
     const filename = `calendar_${now.getFullYear()}${(now.getMonth()+1).toString().padStart(2,'0')}${now.getDate().toString().padStart(2,'0')}_${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}.json`;
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
+    
+    if (navigator.share && navigator.canShare) {
+      try {
+        const file = new File([blob], filename, { type: 'application/json' });
+        await navigator.share({
+          files: [file],
+          title: 'Календарь с делами',
+          text: 'Экспорт данных календаря'
+        });
+      } catch (err) {
+        // Fallback to traditional download if sharing fails
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+      }
+    } else {
+      // Traditional download for browsers that don't support sharing
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+    }
   }
 
   function loadData(event) {
@@ -1253,37 +1258,28 @@
 
   // PWA installation
   window.addEventListener('beforeinstallprompt', (e) => {
-    // Prevent Chrome 67 and earlier from automatically showing the prompt
     e.preventDefault();
-    // Stash the event so it can be triggered later
     deferredPrompt = e;
-    // Show the install button
     const installPwaDiv = document.getElementById('install-pwa');
     if (installPwaDiv) {
       installPwaDiv.style.display = 'flex';
     }
   });
 
-  // Handle install button click
   document.getElementById('install-button').addEventListener('click', () => {
     const installPwaDiv = document.getElementById('install-pwa');
-    // Hide the install UI
     installPwaDiv.style.display = 'none';
-    // Show the install prompt
     deferredPrompt.prompt();
-    // Wait for the user to respond to the prompt
     deferredPrompt.userChoice.then((choiceResult) => {
       if (choiceResult.outcome === 'accepted') {
         console.log('User accepted the install prompt');
       } else {
         console.log('User dismissed the install prompt');
       }
-      // Clear the saved prompt since it can't be used again
       deferredPrompt = null;
     });
   });
 
-  // Handle close button click
   document.getElementById('install-close').addEventListener('click', () => {
     document.getElementById('install-pwa').style.display = 'none';
   });
@@ -1291,7 +1287,6 @@
   // Service worker registration for PWA
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
-      // Inline the service worker content
       const swContent = `
         const CACHE_NAME = 'calendar-app-v1';
         const urlsToCache = [
@@ -1321,7 +1316,6 @@
         });
       `;
 
-      // Create a Blob from the service worker code
       const blob = new Blob([swContent], {type: 'text/javascript'});
       const swUrl = URL.createObjectURL(blob);
 
@@ -1351,7 +1345,6 @@
       };
     });
     
-    // Закрываем меню облака при клике вне его
     document.addEventListener('click', (e) => {
       const menu = document.getElementById('cloud-menu');
       const cloudBtn = document.querySelector('.cloud-btn');
@@ -1360,10 +1353,8 @@
       }
     });
     
-    // Закрываем диалог при клике на оверлей
     document.getElementById('overlay').addEventListener('click', hideConfirmDialog);
     
-    // Добавляем поддержку свайпов для мобильных устройств
     let touchStartX = 0;
     let touchEndX = 0;
     
@@ -1377,10 +1368,9 @@
     }, false);
     
     function handleSwipe() {
-      const threshold = 100; // Минимальное расстояние для свайпа
+      const threshold = 100;
       
       if (touchEndX < touchStartX - threshold) {
-        // Свайп влево - следующий месяц/неделя
         if (currentView === 'month') {
           selectedDate.setMonth(selectedDate.getMonth() + 1);
           render();
@@ -1393,7 +1383,6 @@
       }
       
       if (touchEndX > touchStartX + threshold) {
-        // Свайп вправо - предыдущий месяц/неделя
         if (currentView === 'month') {
           selectedDate.setMonth(selectedDate.getMonth() - 1);
           render();
@@ -1410,14 +1399,6 @@
   }
 
   window.onload = init;
-
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('sw.js').then(function(reg) {
-      console.log('Service Worker зарегистрирован:', reg);
-    }).catch(function(e) {
-      console.error('Service Worker ошибка:', e);
-    });
-  }
 </script>
 </body>
 </html>
